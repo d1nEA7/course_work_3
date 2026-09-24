@@ -42,19 +42,53 @@ class DBManager:
 
         self.conn.commit()
 
-
     def add_country(self, name, lamin, lomin, lamax, lomax):
         """Добавляет страну и её координаты в базу данных."""
 
         with self.conn.cursor() as cur:
             cur.execute("""
+                SELECT id
+                FROM countries
+                WHERE name = %s;
+            """, (name,))
+
+            result = cur.fetchone()
+
+            if result:
+                return result[0]
+
+            cur.execute("""
                 INSERT INTO countries
                     (name, lamin, lomin, lamax, lomax)
                 VALUES
-                    (%s, %s, %s, %s, %s);
+                    (%s, %s, %s, %s, %s)
+                RETURNING id;
             """, (name, lamin, lomin, lamax, lomax))
 
+            country_id = cur.fetchone()[0]
+
         self.conn.commit()
+
+        return country_id
+
+    def clear_aeroplanes(self):
+        """Удаляет все самолёты из таблицы."""
+        with self.conn.cursor() as cur:
+            cur.execute("DELETE FROM aeroplanes;")
+
+        self.conn.commit()
+
+    def get_country_id(self, name):
+        """Получает ID страны по её названию."""
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT id
+                FROM countries
+                WHERE name = %s;
+            """, (name,))
+
+            return cur.fetchone()[0]
 
     def get_countries_and_aeroplanes_count(self):
         """получает список всех стран и количество самолетов в их воздушных пространствах"""
