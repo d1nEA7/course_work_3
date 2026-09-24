@@ -1,10 +1,11 @@
 import psycopg2
 
-from api_connect import ConnAPIOpensky
+
 
 
 class DBManager:
     def __init__(self):
+        """Инициализирует менеджер базы данных."""
         self.conn = None
 
     def connect_to_db(self, database_name, **params):
@@ -78,17 +79,7 @@ class DBManager:
 
         self.conn.commit()
 
-    def get_country_id(self, name):
-        """Получает ID страны по её названию."""
 
-        with self.conn.cursor() as cur:
-            cur.execute("""
-                SELECT id
-                FROM countries
-                WHERE name = %s;
-            """, (name,))
-
-            return cur.fetchone()[0]
 
     def get_countries_and_aeroplanes_count(self):
         """получает список всех стран и количество самолетов в их воздушных пространствах"""

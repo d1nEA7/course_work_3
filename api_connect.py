@@ -1,10 +1,5 @@
-import json
-
 import requests
-from datetime import datetime, timedelta
-import os
 from dotenv import load_dotenv
-
 load_dotenv()
 
 class ConnAPIOpensky:
@@ -26,13 +21,12 @@ class ConnAPIOpensky:
         }
         try:
             response = requests.get(self.url, params=params, timeout=3)
-            print(response.status_code)
-            print(response.text)
+
             return response.json()
 
-        except:
-            print("ошибка")
-
+        except requests.RequestException as error:
+            print(f"Ошибка подключения к OpenSky: {error}")
+            return None
 
 # result = requests.get("https://opensky-network.org/api/states/all?lamin=45.8389&lomin=5.9962&lamax=47.8229&lomax=10.5226", timeout=3)
 # print(result.status_code)
@@ -60,16 +54,7 @@ class  ConnNominatim:
             response = requests.get(self.url, params=params, headers=headers, timeout=3)
             repos = response.json()
             return repos[0].get("boundingbox")
-        except:
-            print("ошибка подключения")
+        except requests.RequestException as error:
+            print(f"Ошибка подключения к nominatim: {error}")
+            return None
 
-#result_country = ConnNominatim("russia").connect_nominatim()
-#print(result_country)
-
-#lamin = float(result_country[0])
-#lomin = float(result_country[2])
-#lamax = float(result_country[1])
-#lomax = float(result_country[3])
-
-#aircraft_1 = ConnAPIOpensky(lamin, lomin, lamax, lomax).connect_opensky()
-#print(json.dumps(aircraft_1, indent=4))

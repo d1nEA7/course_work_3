@@ -1,3 +1,4 @@
+
 from api_connect import ConnNominatim, ConnAPIOpensky
 from DBMngr import DBManager
 
@@ -14,6 +15,22 @@ countries = [
     "Japan",
     "Australia"
 ]
+
+
+db = DBManager()
+
+db.connect_to_db(
+    "course_work_3",
+    user="postgres",
+    password="1234",
+    host="localhost",
+    port="5432"
+)
+
+# Очищаем старые данные о самолётах
+db.clear_aeroplanes()
+
+
 for country in countries:
 
     result_country = ConnNominatim(country).connect_nominatim()
@@ -34,18 +51,9 @@ for country in countries:
         lomax
     ).connect_opensky()
 
-    #for aircraft in aircraft_data["states"]:
-        #print(aircraft)
-
-    db = DBManager()
-
-    db.connect_to_db(
-        "course_work_3",
-        user="postgres",
-        password="1234",
-        host="localhost",
-        port="5432"
-    )
+    if aircraft_data is None:
+        print(f"Не удалось получить самолёты для страны: {country}")
+        continue
 
     country_id = db.add_country(
         country,
@@ -66,4 +74,5 @@ for country in countries:
             country_id
         )
 
-print(db.get_aeroplanes_with_keyword("ACA"))
+
+print(db.get_countries_and_aeroplanes_count())
