@@ -93,11 +93,31 @@ class DBManager:
 
     def get_aeroplanes_with_higher_speed(self):
         """получает список всех самолетов, у которых скорость выше средней"""
-        pass
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT *
+                FROM aeroplanes
+                WHERE velocity > (
+                    SELECT AVG(velocity)
+                    FROM aeroplanes
+                );
+            """)
 
-    def get_aeroplanes_with_keyword(self):
-        """получает список всех самолетов, в позывном которых содержатся переданные в метод символы"""
-        pass
+            return cur.fetchall()
+
+    def get_aeroplanes_with_keyword(self, keyword):
+        """Получает самолёты, в позывном которых содержатся переданные символы."""
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT *
+                FROM aeroplanes
+                WHERE callsign ILIKE %s;
+            """, (f"%{keyword}%",))
+
+            return cur.fetchall()
+
+
 
     def add_aeroplane(
             self,
