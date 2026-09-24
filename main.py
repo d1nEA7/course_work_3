@@ -1,4 +1,4 @@
-from api_connect import ConnNominatim
+from api_connect import ConnNominatim, ConnAPIOpensky
 from DBMngr import DBManager
 
 
@@ -10,6 +10,16 @@ lamin = float(result_country[0])
 lomin = float(result_country[2])
 lamax = float(result_country[1])
 lomax = float(result_country[3])
+
+aircraft_data = ConnAPIOpensky(
+    lamin,
+    lomin,
+    lamax,
+    lomax
+).connect_opensky()
+
+for aircraft in aircraft_data["states"]:
+    print(aircraft)
 
 db = DBManager()
 

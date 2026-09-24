@@ -98,3 +98,41 @@ class DBManager:
     def get_aeroplanes_with_keyword(self):
         """получает список всех самолетов, в позывном которых содержатся переданные в метод символы"""
         pass
+
+    def add_aeroplane(
+            self,
+            icao24,
+            callsign,
+            origin_country,
+            longitude,
+            latitude,
+            velocity,
+            country_id
+    ):
+        """Добавляет самолёт в базу данных."""
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO aeroplanes
+                    (
+                        icao24,
+                        callsign,
+                        origin_country,
+                        longitude,
+                        latitude,
+                        velocity,
+                        country_id
+                    )
+                VALUES
+                    (%s, %s, %s, %s, %s, %s, %s);
+            """, (
+                icao24,
+                callsign,
+                origin_country,
+                longitude,
+                latitude,
+                velocity,
+                country_id
+            ))
+
+        self.conn.commit()
